@@ -8,23 +8,38 @@ Antes de desplegar el proyecto, es necesario configurar las variables de entorno
 
 ```bash
 cd backend
-touch .env
+cp .env.example .env
 ```
 
-2. Configurar las siguientes variables en el archivo `.env`:
+> Nota: Configurar las variables en el archivo `.env`
 
-```env
-# Base de datos
-DATABASE_URL=<ingresar-aqui-url-base-de-datos>
+## 🐳 Ejecutar Scripts de Semillas (Docker)
 
-# CORS
-CORS_ORIGINS=<ingresar-aqui-origenes-permitidos>
+Si estás usando Docker, para ejecutar todos los scripts de semillas:
 
-# JWT
-JWT_SECRET_KEY=<ingresar-aqui-clave-secreta>
-JWT_ALGORITHM=<ingresar-aqui-algoritmo>
-ACCESS_TOKEN_EXPIRE_MINUTES=<ingresar-aqui-minutos>
+1. Accede al contenedor del backend:
+
+```bash
+docker exec -it adn_backend bash
 ```
+
+2. Dentro del contenedor:
+
+```bash
+cd scripts
+chmod +x seed_all.sh
+./seed_all.sh
+```
+
+#### 👤 Usuarios de Prueba
+
+Los siguientes usuarios están disponibles para pruebas:
+
+| Correo                       | Contraseña   |
+| ---------------------------- | ------------ |
+| byte.chen@techcorp.com       | Password123a |
+| data.rodriguez@analytics.com | Password123b |
+| cloud.martinez@devops.com    | Password123c |
 
 ## 🚀 Despliegue Rápido con Docker
 
@@ -195,6 +210,22 @@ Para crear retiros aleatorios de prueba:
 
 ```bash
 python backend/scripts/seed_retiros.py
+```
+
+#### 🐳 Ejecutar todos los scripts de semillas (Docker)
+
+Si estás usando Docker, primero accede al contenedor del backend:
+
+```bash
+docker exec -it adn_backend bash
+```
+
+Luego, dentro del contenedor:
+
+```bash
+cd scripts
+chmod +x seed_all.sh
+./seed_all.sh
 ```
 
 </details>

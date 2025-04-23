@@ -10,22 +10,27 @@ from routers import auth_router, usuario_router, retiro_router, corresponsal_rou
 load_dotenv()
 
 app = FastAPI(
-    title='ADN Project API',
-    description='API para el proyecto ADN',
-    version='0.0.1'
+    title="ADN Project API", description="API para el proyecto ADN", version="0.0.1"
 )
 
 # Configuración del esquema de seguridad
 app.openapi_schema = None  # Necesario para poder modificar el esquema
 app.swagger_ui_init_oauth = {}
 
-# Configuración del esquema de seguridad Bearer
+# Configuración de CORS
+origins = [
+    "http://localhost:5173",  # Vite dev server
+    "http://localhost:3000",  # React dev server
+    "http://localhost:8000",  # FastAPI dev server
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:5173").split(","),
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Definir el esquema de seguridad
@@ -34,11 +39,7 @@ security = HTTPBearer()
 # El resto de la configuración de seguridad se puede simplificar a:
 app.openapi_components = {
     "securitySchemes": {
-        "Bearer": {
-            "type": "http",
-            "scheme": "bearer",
-            "bearerFormat": "JWT"
-        }
+        "Bearer": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
     }
 }
 
@@ -48,6 +49,7 @@ app.include_router(usuario_router)
 app.include_router(retiro_router)
 app.include_router(corresponsal_router)
 
-@app.get('/', tags=['inicio'])
+
+@app.get("/", tags=["inicio"])
 def read_root():
-    return HTMLResponse('<h2>Mi Server</h2>')
+    return HTMLResponse("<h2>Mi Server</h2>")
