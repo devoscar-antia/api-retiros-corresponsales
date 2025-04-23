@@ -1,8 +1,98 @@
-# 🏦 Backend ADN Project
+# 🏦 ADN Project
+
+## ⚙️ Configuración Inicial
+
+Antes de desplegar el proyecto, es necesario configurar las variables de entorno:
+
+1. Crear el archivo `.env` en el directorio `backend/`:
+
+```bash
+cd backend
+touch .env
+```
+
+2. Configurar las siguientes variables en el archivo `.env`:
+
+```env
+# Base de datos
+DATABASE_URL=<ingresar-aqui-url-base-de-datos>
+
+# CORS
+CORS_ORIGINS=<ingresar-aqui-origenes-permitidos>
+
+# JWT
+JWT_SECRET_KEY=<ingresar-aqui-clave-secreta>
+JWT_ALGORITHM=<ingresar-aqui-algoritmo>
+ACCESS_TOKEN_EXPIRE_MINUTES=<ingresar-aqui-minutos>
+```
+
+## 🚀 Despliegue Rápido con Docker
+
+Para desplegar todo el proyecto (backend, frontend y base de datos) con un solo comando:
+
+```bash
+docker-compose up --build
+```
+
+Este comando construirá y ejecutará:
+
+- Backend en http://localhost:8000
+- Frontend en http://localhost:3000
+- PgAdmin en http://localhost:8080
+- Base de datos PostgreSQL en localhost:5432
 
 ## 📝 Descripción
 
-Backend del proyecto ADN, implementado con FastAPI.
+Proyecto ADN implementado con FastAPI en el backend y React + TypeScript en el frontend.
+
+## 🖥️ Frontend
+
+<details>
+<summary>Ver mas</summary>
+
+El frontend está desarrollado con:
+
+- React
+- TypeScript
+- Vite
+- ESLint para linting
+- Nginx para producción
+
+### 📋 Requisitos
+
+- Node.js 18+
+- pnpm (recomendado) o npm
+
+### ⚙️ Instalación
+
+1. Instalar dependencias:
+
+```bash
+cd frontend
+pnpm install
+```
+
+2. Iniciar en modo desarrollo:
+
+```bash
+pnpm dev
+```
+
+3. Construir para producción:
+
+```bash
+pnpm build
+```
+
+### 🐳 Docker
+
+El frontend se puede ejecutar en un contenedor Docker:
+
+```bash
+docker-compose up frontend
+```
+
+</details>
 
 ## 📋 Requisitos
 
