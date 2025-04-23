@@ -1,0 +1,77 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: adn_corresponsal
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    networks:
+      - mi-network
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d adn_corresponsal"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    networks:
+      - mi-network
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: adn_backend
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./backend/.env:/app/.env
+    restart: unless-stopped
+    networks:
+      - mi-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: adn_frontend
+    ports:
+      - 3000:80
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - mi-network
+
+networks:
+  mi-network:
+    driver: bridge
+
+volumes:
+  db_data: 

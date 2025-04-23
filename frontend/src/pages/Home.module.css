@@ -1,0 +1,356 @@
+.container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.navbar {
+  background-color: #1a237e;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.logoutButton {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logoutButton:hover {
+  background-color: white;
+  color: #1a237e;
+}
+
+.mainContainer {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tabContainer {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.tabHeader {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tab {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #666;
+}
+
+.activeTab {
+  color: #1a237e;
+  border-bottom: 3px solid #1a237e;
+}
+
+.tabContent {
+  padding: 2rem;
+}
+
+/* Form Styles */
+.formContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.formTitle {
+  font-size: 1.75rem;
+  color: #1a237e;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.input,
+.select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus,
+.select:focus {
+  border-color: #1a237e;
+  outline: none;
+}
+
+.submitButton {
+  background-color: #1a237e;
+  color: white;
+  padding: 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submitButton:hover {
+  background-color: #283593;
+}
+
+/* Welcome Section Styles */
+.welcomeSection {
+  margin-bottom: 2rem;
+}
+
+.welcomeTitle {
+  font-size: 2rem;
+  color: #1a237e;
+  margin-bottom: 1rem;
+}
+
+.welcomeText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Rules Section Styles */
+.rulesSection {
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.rulesTitle {
+  font-size: 1.5rem;
+  color: #1a237e;
+  margin-bottom: 1.5rem;
+}
+
+.rulesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ruleItem {
+  font-size: 1.1rem;
+  color: #444;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+}
+
+.ruleItem:before {
+  content: "•";
+  color: #1a237e;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+  
+  .navbar {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  .content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Estilos específicos para el input datetime-local */
+.dateTimeInput {
+  appearance: none;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  width: 100%;
+  color: #1a202c;
+  transition: all 0.2s;
+}
+
+.dateTimeInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dateTimeInput::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+  padding: 0;
+}
+
+.dateTimeContainer {
+  position: relative;
+  width: 100%;
+}
+
+.customDateInput {
+  position: relative;
+  width: 100%;
+}
+
+.calendarIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+}
+
+/* Estilos para el DatePicker */
+:global(.react-datepicker-wrapper) {
+  width: 100%;
+}
+
+:global(.react-datepicker) {
+  font-family: inherit;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+}
+
+:global(.react-datepicker__header) {
+  background-color: #f3f4f6;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding-top: 12px;
+}
+
+:global(.react-datepicker__day--selected) {
+  background-color: #3b82f6 !important;
+  border-radius: 50%;
+}
+
+:global(.react-datepicker__day:hover) {
+  border-radius: 50%;
+}
+
+:global(.react-datepicker__time-container) {
+  border-left: 1px solid #e5e7eb;
+}
+
+:global(.react-datepicker__time-list-item--selected) {
+  background-color: #3b82f6 !important;
+}
+
+:global(.react-datepicker__triangle) {
+  display: none;
+}
+
+:global(.react-datepicker__current-month) {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+:global(.react-datepicker__day-name) {
+  color: #6b7280;
+}
+
+:global(.react-datepicker__day) {
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+:global(.react-datepicker__time-container .react-datepicker__time) {
+  border-radius: 0 0 8px 0;
+}
+
+:global(.react-datepicker__time-container .react-datepicker__time-box) {
+  border-radius: 0 0 8px 0;
+}
+
+/* Estilos para el MUI DateTimePicker */
+:global(.MuiTextField-root) {
+  width: 100%;
+}
+
+:global(.MuiInputBase-root) {
+  background-color: white !important;
+  border-radius: 8px !important;
+}
+
+:global(.MuiOutlinedInput-root) {
+  border-radius: 8px !important;
+}
+
+:global(.MuiOutlinedInput-notchedOutline) {
+  border-color: #e2e8f0 !important;
+}
+
+:global(.MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: #3b82f6 !important;
+  border-width: 2px !important;
+}
+
+:global(.MuiPickersDay-root.Mui-selected) {
+  background-color: #3b82f6 !important;
+}
+
+:global(.MuiClock-pin), :global(.MuiClockPointer-root) {
+  background-color: #3b82f6 !important;
+}
+
+:global(.MuiClockPointer-thumb) {
+  border: 16px solid #3b82f6 !important;
+} 
