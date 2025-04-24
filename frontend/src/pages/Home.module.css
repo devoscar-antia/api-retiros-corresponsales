@@ -353,4 +353,11 @@
 
 :global(.MuiClockPointer-thumb) {
   border: 16px solid #3b82f6 !important;
+}
+
+.helperText {
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
 } 

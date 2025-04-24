@@ -8,7 +8,15 @@ class RetiroBaseSchema(BaseModel):
     """Base model for Retiro with basic fields."""
 
     corresponsal_id: int = Field(
-        ..., description="ID del corresponsal", example=1, ge=1
+        ...,
+        description="ID del corresponsal",
+        example=1,
+        ge=1,
+        error_messages={
+            "type_error": "El ID del corresponsal debe ser un número entero",
+            "int_parsing": "El ID del corresponsal debe ser un número entero válido",
+            "ge": "El ID del corresponsal debe ser mayor o igual a 1",
+        },
     )
 
     monto: Decimal = Field(
@@ -17,16 +25,32 @@ class RetiroBaseSchema(BaseModel):
         decimal_places=2,
         description="Monto del retiro en pesos colombianos",
         example=Decimal("100000.00"),
+        error_messages={
+            "type_error": "El monto debe ser un número decimal",
+            "decimal_parsing": "El monto debe ser un número decimal válido",
+            "ge": "El monto debe ser mayor o igual a 10,000",
+            "decimal_places": "El monto debe tener máximo 2 decimales",
+        },
     )
     canal_atencion: Optional[str] = Field(
         None,
         max_length=50,
         description="Canal de atención del retiro",
         example="ventanilla",
+        error_messages={
+            "type_error": "El canal de atención debe ser una cadena de texto",
+            "max_length": "El canal de atención no puede exceder los 50 caracteres",
+        },
     )
 
     fecha_hora: datetime = Field(
-        ..., description="Fecha y hora del retiro", example="2025-04-22T07:30:00"
+        ...,
+        description="Fecha y hora del retiro",
+        example="2025-04-22T07:30:00",
+        error_messages={
+            "type_error": "La fecha y hora debe ser una fecha válida",
+            "datetime_parsing": "La fecha y hora debe tener un formato válido (YYYY-MM-DDTHH:MM:SS)",
+        },
     )
 
 

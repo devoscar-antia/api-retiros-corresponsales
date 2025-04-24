@@ -23,7 +23,7 @@ class RetiroErrorResponse(BaseErrorResponse):
                     {
                         "type": "greater_than_equal",
                         "loc": ["body", "monto"],
-                        "msg": "Input should be greater than or equal to 10000",
+                        "msg": "El monto de retiro debe ser mayor o igual a 10000",
                         "input": 100,
                         "ctx": {"ge": 10000},
                     },
