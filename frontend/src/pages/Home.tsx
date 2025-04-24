@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, ReactNode } from 'react';
 import styles from './Home.module.css';
-import axios from '../config/axios';  // Importamos nuestra instancia configurada de axios
+import axios from '../config/axios';
 import { Dialog } from '../components/Dialog';
 import { Loader } from '../components/Loader';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -46,7 +46,6 @@ export default function Home() {
         setCorresponsales(data);
       } catch (error) {
         console.error('Error al cargar corresponsales:', error);
-        // Aquí podrías implementar un manejo de errores más elaborado
       }
     };
 
@@ -79,19 +78,12 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const retiroData = {
+      await axios.post('/retiros', {
         corresponsal_id: parseInt(formData.corresponsalId),
         monto: parseInt(formData.monto),
         fecha_hora: formData.fechaHora,
         canal_atencion: formData.canal
-      };
-
-      // Creamos dos promesas: una para el tiempo mínimo y otra para la petición
-      const minLoadingTime = new Promise(resolve => setTimeout(resolve, 3000));
-      const apiCall = axios.post('/retiros', retiroData);
-
-      // Esperamos a que ambas promesas se completen
-      await Promise.all([minLoadingTime, apiCall]);
+      });
 
       setDialogState({
         message: 'Retiro procesado exitosamente',
@@ -107,17 +99,32 @@ export default function Home() {
       });
 
     } catch (error: any) {
-      let errorMessage
+      let errorMessage;
       if (error.response?.data?.detail) {
-        if (error.response?.data?.detail?.message) {
-          errorMessage = (
-            <>
-              <p>{error.response.data.detail.message}</p>
-              <p>Intentos: {error.response.data.detail?.intentos}</p>
-            </>
-          );
+        if (typeof error.response.data.detail === 'object') {
+
+          if (error.response.data.detail instanceof Array) {
+            const errorDetail = error.response.data.detail[0];
+
+            errorMessage = errorDetail ? (
+              <p>{errorDetail.msg}</p>
+            ) : (
+              <p>Error desconocido</p>
+            );
+          } else {
+            errorMessage = (
+              <>
+                <p>{error.response.data.detail.message}</p>
+                {error.response.data.detail.intentos !== undefined && (
+                  <p>Intentos: {error.response.data.detail.intentos}</p>
+                )}
+              </>
+            );
+          }
+
+
         } else {
-          errorMessage = error.response.data.detail
+          errorMessage = error.response.data.detail;
         }
       } else {
         errorMessage = 'Error desconocido';
@@ -166,8 +173,6 @@ export default function Home() {
                   type="number"
                   id="monto"
                   name="monto"
-                  // min="10000"
-                  // max="1000000"
                   value={formData.monto}
                   onChange={handleInputChange}
                   required
@@ -197,7 +202,7 @@ export default function Home() {
                         fullWidth: true
                       },
                       actionBar: {
-                        actions: ['cancel', 'today', 'accept',]
+                        actions: ['cancel', 'today', 'accept']
                       }
                     }}
                     timeSteps={{ minutes: 1 }}
@@ -248,21 +253,11 @@ export default function Home() {
             <section className={styles.rulesSection}>
               <h3 className={styles.rulesTitle}>Reglas del Sistema</h3>
               <ul className={styles.rulesList}>
-                <li className={styles.ruleItem}>
-                  Retiros entre $10.000 y $1.000.000 COP
-                </li>
-                <li className={styles.ruleItem}>
-                  Horario de retiros: 7:00 AM - 7:00 PM
-                </li>
-                <li className={styles.ruleItem}>
-                  Límite diario por corresponsal
-                </li>
-                <li className={styles.ruleItem}>
-                  Verificación y autorización requerida
-                </li>
-                <li className={styles.ruleItem}>
-                  Registro detallado de operaciones
-                </li>
+                <li className={styles.ruleItem}>Retiros entre $10.000 y $1.000.000 COP</li>
+                <li className={styles.ruleItem}>Horario de retiros: 7:00 AM - 7:00 PM</li>
+                <li className={styles.ruleItem}>Límite diario por corresponsal</li>
+                <li className={styles.ruleItem}>Verificación y autorización requerida</li>
+                <li className={styles.ruleItem}>Registro detallado de operaciones</li>
               </ul>
             </section>
           </div>
@@ -280,7 +275,7 @@ export default function Home() {
         type={dialogState.type}
         show={dialogState.show}
         onClose={() => setDialogState(prev => ({ ...prev, show: false }))}
-        autoClose={false}
+        autoClose={dialogState.type === 'success'}
         buttonText={dialogState.type === 'success' ? 'Entendido' : 'Intentar de nuevo'}
       />
       <nav className={styles.navbar}>
@@ -314,4 +309,3 @@ export default function Home() {
     </div>
   );
 }
-
