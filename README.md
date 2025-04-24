@@ -2,6 +2,7 @@
 
 ## ⚙️ Configuración Inicial
 
+
 Antes de desplegar el proyecto, es necesario configurar las variables de entorno:
 
 1. Crear el archivo `.env` en el directorio `backend/`:
