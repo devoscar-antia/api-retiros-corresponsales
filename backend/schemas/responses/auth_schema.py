@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr, Field
 
 class LoginSchema(BaseModel):
@@ -10,4 +12,4 @@ class TokenSchema(BaseModel):
     token_type: str
 
 class TokenDataSchema(BaseModel):
-    correo: str | None = None 
+    correo: Optional[str] = None 

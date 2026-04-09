@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -18,9 +18,6 @@ SECRET_KEY = os.getenv("SECRET_KEY", "tu_clave_secreta_super_segura")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
-# Configuración de password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # Configuración del token OAuth2
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="auth/token",
@@ -31,13 +28,17 @@ oauth2_scheme = OAuth2PasswordBearer(
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifica si la contraseña en texto plano coincide con el hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    """Verifica si la contraseña en texto plano coincide con el hash bcrypt."""
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"),
+        hashed_password.encode("utf-8"),
+    )
 
 
 def get_password_hash(password: str) -> str:
-    """Genera un hash de la contraseña."""
-    return pwd_context.hash(password)
+    """Genera un hash bcrypt de la contraseña (mismo estilo que UsuarioModel)."""
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
 
 
 def authenticate_user(db: Session, correo: str, clave: str):
@@ -52,9 +53,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Crea un token JWT de acceso."""
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.now(UTC) + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+        )
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

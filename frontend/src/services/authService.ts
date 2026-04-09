@@ -21,7 +21,16 @@ export const authService = {
             return data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                throw new Error(error.response?.data?.message || 'Error en la autenticación');
+                const data = error.response?.data as
+                    | { detail?: string | Array<{ msg?: string }> }
+                    | undefined;
+                let msg = 'Error en la autenticación';
+                if (typeof data?.detail === 'string') {
+                    msg = data.detail;
+                } else if (Array.isArray(data?.detail) && data.detail[0]?.msg) {
+                    msg = data.detail[0].msg;
+                }
+                throw new Error(msg);
             }
             throw new Error('Error inesperado durante el login');
         }

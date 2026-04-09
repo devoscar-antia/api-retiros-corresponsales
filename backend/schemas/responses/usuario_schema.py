@@ -1,9 +1,13 @@
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
+
+
 class UsuarioBase(BaseModel):
     nombre: str
     correo: EmailStr
-    bloqueado_hasta: datetime | None = None
+    bloqueado_hasta: Optional[datetime] = None
 
 class UsuarioCreate(UsuarioBase):
     clave: str

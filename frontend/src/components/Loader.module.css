@@ -1,9 +1,8 @@
 .loaderOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
   background: rgb(0 0 0 / 70%);
   display: flex;
   justify-content: center;
@@ -13,9 +12,9 @@
 
 .loaderContainer {
   background: white;
-  padding: 2rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
   border-radius: 20px;
-  width: 90%;
+  width: calc(100% - 2rem);
   max-width: 400px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);

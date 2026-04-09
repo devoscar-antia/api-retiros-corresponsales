@@ -1,4 +1,17 @@
-.cursorignore
 .vscode/
 pgadmin_data/
 postgres_data/
+
+# Entornos y secretos
+.env
+backend/.env
+backend/venv/
+backend/**/__pycache__/
+*.py[cod]
+
+# Base de datos local
+backend/adn.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/

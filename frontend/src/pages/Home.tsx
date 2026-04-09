@@ -7,8 +7,19 @@ import { Loader } from '../components/Loader';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { esES } from '@mui/x-date-pickers/locales';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
+import {
+  parseMontoCOP,
+  formatMontoCOP,
+  sanitizeMontoInput,
+} from '../utils/montoCOP';
+
+const localeTextPicker = {
+  ...(esES.components.MuiLocalizationProvider.defaultProps?.localeText ?? {}),
+  okButtonLabel: 'Aceptar',
+};
 
 interface Corresponsal {
   id: number;
@@ -73,16 +84,58 @@ export default function Home() {
     }
   };
 
+  const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      monto: sanitizeMontoInput(e.target.value),
+    }));
+  };
+
+  const handleMontoBlur = () => {
+    setFormData((prev) => {
+      const t = prev.monto.trim();
+      if (t === '') {
+        return prev;
+      }
+      const n = parseMontoCOP(prev.monto);
+      if (!Number.isFinite(n)) {
+        return prev;
+      }
+      return { ...prev, monto: formatMontoCOP(n) };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    const montoNum = parseMontoCOP(formData.monto);
+    if (!Number.isFinite(montoNum)) {
+      setIsLoading(false);
+      setDialogState({
+        message:
+          'Ingrese un monto válido. Use punto para miles y coma para decimales (ej. 50.000 o 25.500,50).',
+        type: 'error',
+        show: true,
+      });
+      return;
+    }
+    if (montoNum < 10_000 || montoNum > 1_000_000) {
+      setIsLoading(false);
+      setDialogState({
+        message: 'El monto debe estar entre $10.000 y $1.000.000 COP.',
+        type: 'error',
+        show: true,
+      });
+      return;
+    }
+
     try {
       await axios.post('/retiros', {
-        corresponsal_id: parseInt(formData.corresponsalId),
-        monto: parseInt(formData.monto),
+        corresponsal_id: parseInt(formData.corresponsalId, 10),
+        monto: montoNum,
         fecha_hora: formData.fechaHora,
-        canal_atencion: formData.canal
+        canal_atencion: formData.canal,
       });
 
       setDialogState({
@@ -167,50 +220,63 @@ export default function Home() {
                 </select>
               </div>
 
-              <div className={styles.formGroup}>
-                <label htmlFor="monto">Monto de Retiro (COP)</label>
-                <input
-                  type="number"
-                  id="monto"
-                  name="monto"
-                  value={formData.monto}
-                  onChange={handleInputChange}
-                  required
-                  className={styles.input}
-                  placeholder="Entre $10.000 y $1.000.000"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="fechaHora">Fecha y Hora</label>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-                  <DateTimePicker
-                    value={formData.fechaHora ? dayjs(formData.fechaHora) : null}
-                    onChange={(newValue) => {
-                      if (newValue) {
-                        setFormData(prev => ({
-                          ...prev,
-                          fechaHora: newValue.format('YYYY-MM-DDTHH:mm')
-                        }));
-                      }
-                    }}
-                    slotProps={{
-                      textField: {
-                        required: true,
-                        placeholder: "Seleccione fecha y hora",
-                        className: styles.input,
-                        fullWidth: true
-                      },
-                      actionBar: {
-                        actions: ['cancel', 'today', 'accept']
-                      }
-                    }}
-                    timeSteps={{ minutes: 1 }}
-                    format="DD/MM/YYYY HH:mm"
-                    ampm={false}
-                    views={['year', 'month', 'day', 'hours', 'minutes']}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="monto">Monto (COP)</label>
+                  <input
+                    type="text"
+                    id="monto"
+                    name="monto"
+                    autoComplete="off"
+                    inputMode="decimal"
+                    value={formData.monto}
+                    onChange={handleMontoChange}
+                    onBlur={handleMontoBlur}
+                    required
+                    className={styles.input}
+                    placeholder="Ej. 50.000 o 25.500,50"
                   />
-                </LocalizationProvider>
+                  <span className={styles.helperText}>
+                    Miles con punto (.). Decimales con coma (ej. 1.000,50).
+                  </span>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="fechaHora">Fecha y hora</label>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="es"
+                    localeText={localeTextPicker}
+                  >
+                    <DateTimePicker
+                      value={formData.fechaHora ? dayjs(formData.fechaHora) : null}
+                      onChange={(newValue) => {
+                        if (newValue) {
+                          setFormData(prev => ({
+                            ...prev,
+                            fechaHora: newValue.format('YYYY-MM-DDTHH:mm')
+                          }));
+                        }
+                      }}
+                      slotProps={{
+                        textField: {
+                          required: true,
+                          id: 'fechaHora',
+                          placeholder: 'Seleccionar…',
+                          className: styles.input,
+                          fullWidth: true,
+                        },
+                        actionBar: {
+                          actions: ['cancel', 'today', 'accept'],
+                        },
+                      }}
+                      timeSteps={{ minutes: 1 }}
+                      format="DD/MM/YYYY HH:mm"
+                      ampm={false}
+                      views={['year', 'month', 'day', 'hours', 'minutes']}
+                    />
+                  </LocalizationProvider>
+                </div>
               </div>
 
               <div className={styles.formGroup}>
@@ -231,8 +297,12 @@ export default function Home() {
                 </select>
               </div>
 
-              <button type="submit" className={styles.submitButton}>
-                Procesar Retiro
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Procesando…' : 'Procesar retiro'}
               </button>
             </form>
           </div>
@@ -278,34 +348,61 @@ export default function Home() {
         autoClose={dialogState.type === 'success'}
         buttonText={dialogState.type === 'success' ? 'Entendido' : 'Intentar de nuevo'}
       />
-      <nav className={styles.navbar}>
+      <header className={styles.navbar}>
         <h1 className={styles.logo}>ADN Técnico</h1>
-        <button onClick={handleLogout} className={styles.logoutButton}>
-          Cerrar Sesión
+        <button
+          type="button"
+          onClick={handleLogout}
+          className={styles.logoutButton}
+          aria-label="Cerrar sesión"
+        >
+          <span className={styles.logoutLabelFull}>Cerrar sesión</span>
+          <span className={styles.logoutLabelShort} aria-hidden="true">
+            Salir
+          </span>
         </button>
-      </nav>
+      </header>
 
-      <div className={styles.mainContainer}>
+      <main className={styles.mainContainer}>
         <div className={styles.tabContainer}>
-          <div className={styles.tabHeader}>
+          <div
+            className={styles.tabHeader}
+            role="tablist"
+            aria-label="Secciones del panel"
+          >
             <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 1}
+              id="tab-sistema"
+              aria-controls="tabpanel-sistema"
               className={`${styles.tab} ${activeTab === 1 ? styles.activeTab : ''}`}
               onClick={() => setActiveTab(1)}
             >
-              Sistema
+              Registrar retiro
             </button>
             <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 2}
+              id="tab-detalles"
+              aria-controls="tabpanel-detalles"
               className={`${styles.tab} ${activeTab === 2 ? styles.activeTab : ''}`}
               onClick={() => setActiveTab(2)}
             >
-              Detalles
+              Información
             </button>
           </div>
-          <div className={styles.tabContent}>
+          <div
+            className={styles.tabContent}
+            role="tabpanel"
+            id={activeTab === 1 ? 'tabpanel-sistema' : 'tabpanel-detalles'}
+            aria-labelledby={activeTab === 1 ? 'tab-sistema' : 'tab-detalles'}
+          >
             {renderTabContent()}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

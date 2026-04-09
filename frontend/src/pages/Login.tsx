@@ -20,65 +20,91 @@ export default function Login() {
         correo: email,
         clave: password,
       });
-      
+
       localStorage.setItem('token', response.access_token);
       navigate('/');
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Error en el login');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error en el login');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginCard}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>ADN Técnico</h1>
-          <p className={styles.subtitle}>Sistema de Corresponsales Bancarios</p>
+    <div className={styles.page}>
+      <aside className={styles.brand} aria-hidden="true">
+        <div className={styles.brandInner}>
+          <span className={styles.brandBadge}>Corresponsales</span>
+          <h1 className={styles.brandTitle}>Operaciones claras, clientes tranquilos</h1>
+          <p className={styles.brandLead}>
+            Registre retiros con validaciones de monto, horario y límites diarios en un
+            solo lugar.
+          </p>
         </div>
+      </aside>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {error && <div className={styles.error}>{error}</div>}
-          
-          <div className={styles.formGroup}>
-            <label className={styles.label}>
-              Correo Electrónico
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={styles.input}
-              placeholder="ejemplo@correo.com"
-              disabled={isLoading}
-              required
-            />
-          </div>
+      <div className={styles.panel}>
+        <div className={styles.loginCard}>
+          <header className={styles.header}>
+            <p className={styles.eyebrow}>ADN Técnico</p>
+            <h2 className={styles.title}>Iniciar sesión</h2>
+            <p className={styles.subtitle}>Use su correo corporativo para continuar</p>
+          </header>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>
-              Contraseña
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={styles.input}
-              placeholder="••••••••"
-              disabled={isLoading}
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
+            {error ? (
+              <div className={styles.error} role="alert">
+                {error}
+              </div>
+            ) : null}
 
-          <button 
-            type="submit" 
-            className={styles.button}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-          </button>
-        </form>
+            <div className={styles.formGroup}>
+              <label className={styles.label} htmlFor="login-email">
+                Correo electrónico
+              </label>
+              <input
+                id="login-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={styles.input}
+                placeholder="nombre@empresa.com"
+                disabled={isLoading}
+                required
+                aria-invalid={!!error}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label} htmlFor="login-password">
+                Contraseña
+              </label>
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={styles.input}
+                placeholder="Su contraseña"
+                disabled={isLoading}
+                required
+                aria-invalid={!!error}
+              />
+            </div>
+
+            <button type="submit" className={styles.button} disabled={isLoading}>
+              {isLoading ? 'Verificando…' : 'Entrar'}
+            </button>
+          </form>
+
+          <p className={styles.footerNote}>
+            Si olvidó su clave, contacte al administrador del sistema.
+          </p>
+        </div>
       </div>
     </div>
   );

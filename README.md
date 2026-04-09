@@ -1,7 +1,12 @@
-# 🏦 ADN Project
+# ADN Project
 
-## ⚙️ Configuración Inicial
+## Autor y repositorio
 
+- **GitHub:** [devoscar-antia](https://github.com/devoscar-antia)
+- **Correo:** oscar.antia00@gmail.com
+- **Repositorio:** [api-retiros-corresponsales](https://github.com/devoscar-antia/api-retiros-corresponsales)
+
+## Configuración inicial
 
 Antes de desplegar el proyecto, es necesario configurar las variables de entorno:
 
@@ -14,7 +19,7 @@ cp .env.example .env
 
 > Nota: Configurar las variables en el archivo `.env`
 
-## 🐳 Ejecutar Scripts de Semillas (Docker)
+## Ejecutar scripts de semillas (Docker)
 
 Si estás usando Docker, para ejecutar todos los scripts de semillas:
 
@@ -32,7 +37,7 @@ chmod +x seed_all.sh
 ./seed_all.sh
 ```
 
-#### 👤 Usuarios de Prueba
+#### Usuarios de prueba
 
 Los siguientes usuarios están disponibles para pruebas:
 
@@ -42,7 +47,7 @@ Los siguientes usuarios están disponibles para pruebas:
 | data.rodriguez@analytics.com | Password123b |
 | cloud.martinez@devops.com    | Password123c |
 
-## 🚀 Despliegue Rápido con Docker
+## Despliegue rápido con Docker
 
 Para desplegar todo el proyecto (backend, frontend y base de datos) con un solo comando:
 
@@ -57,11 +62,11 @@ Este comando construirá y ejecutará:
 - PgAdmin en http://localhost:8080
 - Base de datos PostgreSQL en localhost:5432
 
-## 📝 Descripción
+## Descripción
 
 Proyecto ADN implementado con FastAPI en el backend y React + TypeScript en el frontend.
 
-## 🖥️ Frontend
+## Frontend
 
 <details>
 <summary>Ver mas</summary>
@@ -74,12 +79,12 @@ El frontend está desarrollado con:
 - ESLint para linting
 - Nginx para producción
 
-### 📋 Requisitos
+### Requisitos
 
 - Node.js 18+
 - pnpm (recomendado) o npm
 
-### ⚙️ Instalación
+### Instalación
 
 1. Instalar dependencias:
 
@@ -100,7 +105,7 @@ pnpm dev
 pnpm build
 ```
 
-### 🐳 Docker
+### Docker
 
 El frontend se puede ejecutar en un contenedor Docker:
 
@@ -110,7 +115,7 @@ docker-compose up frontend
 
 </details>
 
-## 📋 Requisitos
+## Requisitos (backend)
 
 <details>
 <summary>Ver mas</summary>
@@ -118,7 +123,7 @@ docker-compose up frontend
 - Python 3.11+
 - pip
 
-## ⚙️ Instalación
+### Instalación
 
 1. Crear un entorno virtual:
 
@@ -140,20 +145,21 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-3. Instalar dependencias:
+3. Instalar dependencias (desde la carpeta `backend/`):
 
 ```bash
+cd backend
 pip install -r requirements.txt
 ```
 
 </details>
 
-## 💾 Base de Datos
+## Base de datos
 
 <details>
 <summary>Ver mas</summary>
 
-### 🔄 Migraciones con Alembic
+### Migraciones con Alembic
 
 Para manejar las migraciones de la base de datos:
 
@@ -187,9 +193,9 @@ alembic history
 alembic current
 ```
 
-### 🌱 Semillas de Datos
+### Semillas de datos
 
-#### 👥 Corresponsales
+#### Corresponsales
 
 Para crear los corresponsales de prueba:
 
@@ -197,15 +203,15 @@ Para crear los corresponsales de prueba:
 python backend/scripts/seed_corresponsales.py
 ```
 
-#### ⚠️ Reset de Base de Datos (Opcional)
+#### Reset de base de datos (opcional)
 
-⚠️ **ADVERTENCIA**: Este comando eliminará todas las tablas existentes.
+**ADVERTENCIA:** Este comando eliminará todas las tablas existentes.
 
 ```bash
 python backend/scripts/seed_reset.py
 ```
 
-#### 💰 Retiros Aleatorios (Opcional)
+#### Retiros aleatorios (opcional)
 
 Para crear retiros aleatorios de prueba:
 
@@ -213,7 +219,7 @@ Para crear retiros aleatorios de prueba:
 python backend/scripts/seed_retiros.py
 ```
 
-#### 🐳 Ejecutar todos los scripts de semillas (Docker)
+#### Ejecutar todos los scripts de semillas (Docker)
 
 Si estás usando Docker, primero accede al contenedor del backend:
 
@@ -231,20 +237,20 @@ chmod +x seed_all.sh
 
 </details>
 
-## 🧪 Tests
+## Tests
 
 <details>
 <summary>Ver mas</summary>
 
-### 🏃‍♂️ Ejecutar todos los tests
+### Ejecutar todos los tests
 
 ```bash
 pytest
 ```
 
-### 📊 Tests específicos
+### Tests específicos
 
-#### ⏰ Validación de horarios de retiro
+#### Validación de horarios de retiro
 
 Para probar la validación de horarios de retiro y generar un log detallado:
 
