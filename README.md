@@ -1,29 +1,116 @@
 # ADN Project
 
+Sistema de corresponsales bancarios: registro de retiros con validación de montos, horarios y topes diarios.
+
 ## Autor y repositorio
 
 - **GitHub:** [devoscar-antia](https://github.com/devoscar-antia)
 - **Correo:** oscar.antia00@gmail.com
 - **Repositorio:** [api-retiros-corresponsales](https://github.com/devoscar-antia/api-retiros-corresponsales)
 
+## Stack
+
+| Capa | Tecnología |
+|------|------------|
+| API | FastAPI, SQLAlchemy, Alembic, JWT (bcrypt) |
+| Cliente | React 19, TypeScript, Vite, Material UI, Day.js |
+| Base de datos | PostgreSQL (producción / Docker); SQLite posible en desarrollo local |
+
+## Características destacadas
+
+- Interfaz **responsive** (móvil y escritorio) y formulario de retiros con formato de **monto en español (COP)** (miles con punto, decimales con coma).
+- Mensajes de **error de validación (HTTP 422) en español** y cuerpo de respuesta reducido (sin enlaces ni metadatos internos de Pydantic).
+- **Documentación interactiva** de la API en `/docs` cuando el backend está en marcha.
+- Semillas de datos para corresponsales y usuarios de prueba.
+
 ## Configuración inicial
 
-Antes de desplegar el proyecto, es necesario configurar las variables de entorno:
+### Backend (`backend/.env`)
 
-1. Crear el archivo `.env` en el directorio `backend/`:
+Copia el ejemplo y ajusta valores (especialmente `SECRET_KEY` y `DATABASE_URL`):
 
 ```bash
 cd backend
 cp .env.example .env
 ```
 
-> Nota: Configurar las variables en el archivo `.env`
+- **Docker:** en `DATABASE_URL` usa `POSTGRES_HOST=db` (nombre del servicio en `docker-compose`).
+- **PostgreSQL en tu máquina:** usa `POSTGRES_HOST=localhost` y la URL acorde.
+- **SQLite (solo desarrollo):** puedes usar por ejemplo `DATABASE_URL=sqlite:///./adn.db` y crear tablas con los scripts de semilla o con Alembic según tu flujo.
+
+### Docker Compose (archivo `.env` en la **raíz** del repositorio)
+
+Para que `docker compose` levante Postgres y PgAdmin, crea un `.env` **junto a** `docker-compose.yml` con al menos:
+
+```env
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=admin123
+POSTGRES_DB=adn_corresponsal
+PGADMIN_DEFAULT_EMAIL=admin@admin.com
+PGADMIN_DEFAULT_PASSWORD=admin123
+```
+
+Los valores deben ser coherentes con `backend/.env` cuando uses el stack con contenedores.
+
+> El archivo `.env` no debe subirse al repositorio (está listado en `.gitignore`).
+
+## Despliegue rápido con Docker
+
+```bash
+docker compose up --build
+```
+
+Servicios habituales:
+
+- API: http://localhost:8000 (documentación: http://localhost:8000/docs)
+- Frontend (contenedor): http://localhost:3000
+- PgAdmin: http://localhost:8080
+- PostgreSQL: `localhost:5432`
+
+## Desarrollo local sin Docker
+
+### Backend
+
+Desde la carpeta `backend/`:
+
+```bash
+python -m venv venv
+# Windows: .\venv\Scripts\activate
+# Linux/macOS: source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Requisitos recomendados: **Python 3.11+** (el proyecto puede ejecutarse también en 3.9 con las dependencias actuales).
+
+En Windows, si `pip install` falla al compilar `greenlet`, instala antes una versión con rueda precompilada, por ejemplo: `pip install "greenlet>=3.0.3,<3.2"`, o instala las [herramientas de compilación de Visual C++](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Vite suele servir la app en **http://localhost:5173** (o el siguiente puerto libre). La API por defecto se asume en `http://localhost:8000`. Puedes definir otra base con:
+
+```env
+# frontend/.env.local (opcional)
+VITE_API_URL=http://localhost:8000
+```
+
+### Usuarios de prueba
+
+| Correo | Contraseña |
+|--------|------------|
+| byte.chen@techcorp.com | Password123a |
+| data.rodriguez@analytics.com | Password123b |
+| cloud.martinez@devops.com | Password123c |
 
 ## Ejecutar scripts de semillas (Docker)
 
-Si estás usando Docker, para ejecutar todos los scripts de semillas:
-
-1. Accede al contenedor del backend:
+1. Entra al contenedor del backend:
 
 ```bash
 docker exec -it adn_backend bash
@@ -37,202 +124,61 @@ chmod +x seed_all.sh
 ./seed_all.sh
 ```
 
-#### Usuarios de prueba
-
-Los siguientes usuarios están disponibles para pruebas:
-
-| Correo                       | Contraseña   |
-| ---------------------------- | ------------ |
-| byte.chen@techcorp.com       | Password123a |
-| data.rodriguez@analytics.com | Password123b |
-| cloud.martinez@devops.com    | Password123c |
-
-## Despliegue rápido con Docker
-
-Para desplegar todo el proyecto (backend, frontend y base de datos) con un solo comando:
-
-```bash
-docker-compose up --build
-```
-
-Este comando construirá y ejecutará:
-
-- Backend en http://localhost:8000
-- Frontend en http://localhost:3000
-- PgAdmin en http://localhost:8080
-- Base de datos PostgreSQL en localhost:5432
-
-## Descripción
-
-Proyecto ADN implementado con FastAPI en el backend y React + TypeScript en el frontend.
-
-## Frontend
+## Frontend (detalle)
 
 <details>
-<summary>Ver mas</summary>
+<summary>Ver más</summary>
 
-El frontend está desarrollado con:
+- React, TypeScript, Vite, ESLint
+- Material UI y calendario localizado (español)
+- Nginx en la imagen de producción del frontend
 
-- React
-- TypeScript
-- Vite
-- ESLint para linting
-- Nginx para producción
+**Requisitos:** Node.js 18+ y npm o pnpm.
 
-### Requisitos
-
-- Node.js 18+
-- pnpm (recomendado) o npm
-
-### Instalación
-
-1. Instalar dependencias:
+**Solo frontend en Docker:**
 
 ```bash
-cd frontend
-pnpm install
-```
-
-2. Iniciar en modo desarrollo:
-
-```bash
-pnpm dev
-```
-
-3. Construir para producción:
-
-```bash
-pnpm build
-```
-
-### Docker
-
-El frontend se puede ejecutar en un contenedor Docker:
-
-```bash
-docker-compose up frontend
+docker compose up frontend
 ```
 
 </details>
 
-## Requisitos (backend)
+## Backend (detalle)
 
 <details>
-<summary>Ver mas</summary>
+<summary>Ver más</summary>
 
-- Python 3.11+
-- pip
-
-### Instalación
-
-1. Crear un entorno virtual:
+**Instalación de dependencias** (siempre desde `backend/`):
 
 ```bash
-python -m venv venv
-```
-
-2. Activar el entorno virtual:
-
-- Windows:
-
-```bash
-.\venv\Scripts\activate
-```
-
-- Unix/MacOS:
-
-```bash
-source venv/bin/activate
-```
-
-3. Instalar dependencias (desde la carpeta `backend/`):
-
-```bash
-cd backend
 pip install -r requirements.txt
 ```
 
-</details>
+### Migraciones (Alembic)
 
-## Base de datos
-
-<details>
-<summary>Ver mas</summary>
-
-### Migraciones con Alembic
-
-Para manejar las migraciones de la base de datos:
-
-1. Crear una nueva migración:
+Ejecuta los comandos **desde la carpeta `backend/`**, con el entorno virtual activado y `DATABASE_URL` definida en `.env`:
 
 ```bash
+cd backend
 alembic revision --autogenerate -m "descripción del cambio"
-```
-
-2. Aplicar las migraciones:
-
-```bash
 alembic upgrade head
-```
-
-3. Revertir la última migración:
-
-```bash
 alembic downgrade -1
-```
-
-4. Ver el historial de migraciones:
-
-```bash
 alembic history
-```
-
-5. Ver el estado actual de las migraciones:
-
-```bash
 alembic current
 ```
 
-### Semillas de datos
-
-#### Corresponsales
-
-Para crear los corresponsales de prueba:
+### Semillas sin Docker
 
 ```bash
 python backend/scripts/seed_corresponsales.py
-```
-
-#### Reset de base de datos (opcional)
-
-**ADVERTENCIA:** Este comando eliminará todas las tablas existentes.
-
-```bash
-python backend/scripts/seed_reset.py
-```
-
-#### Retiros aleatorios (opcional)
-
-Para crear retiros aleatorios de prueba:
-
-```bash
+python backend/scripts/seed_usuarios.py
 python backend/scripts/seed_retiros.py
 ```
 
-#### Ejecutar todos los scripts de semillas (Docker)
-
-Si estás usando Docker, primero accede al contenedor del backend:
+**Reset destructivo de tablas** (pide confirmación):
 
 ```bash
-docker exec -it adn_backend bash
-```
-
-Luego, dentro del contenedor:
-
-```bash
-cd scripts
-chmod +x seed_all.sh
-./seed_all.sh
+python backend/scripts/seed_reset.py
 ```
 
 </details>
@@ -240,44 +186,31 @@ chmod +x seed_all.sh
 ## Tests
 
 <details>
-<summary>Ver mas</summary>
+<summary>Ver más</summary>
 
-### Ejecutar todos los tests
+Desde la carpeta `backend/` con el venv activado:
 
 ```bash
+cd backend
 pytest
-```
-
-### Tests específicos
-
-#### Validación de horarios de retiro
-
-Para probar la validación de horarios de retiro y generar un log detallado:
-
-> Con archivo de salida:
-
-```bash
-pytest -s tests/test_retiro.py::TestRetiroGroup::test_validar_multiples_horas_v1 > test_validar_multiples_horas_v1.log
-```
-
-```bash
-pytest -s tests/test_retiro.py::TestRetiroGroup::test_validar_multiples_horas_v2 > test_validar_multiples_horas_v2.log
-```
-
-> Sin archivo de salida:
-
-```bash
-pytest tests/test_retiro.py::TestRetiroGroup::test_validar_multiples_horas_v1
-```
-
-```bash
-pytest tests/test_retiro.py::TestRetiroGroup::test_validar_multiples_horas_v2
-```
-
-> Todos los test para retiro:
-
-```bash
 pytest tests/test_retiro.py
 ```
 
+Ejemplos con salida a archivo:
+
+```bash
+pytest -s tests/test_retiro.py::TestRetiroGroup::test_validar_multiples_horas_v1 > test_validar_multiples_horas_v1.log
+pytest -s tests/test_retiro.py::TestRetiroGroup::test_validar_multiples_horas_v2 > test_validar_multiples_horas_v2.log
+```
+
 </details>
+
+## Estructura resumida
+
+```
+api-retiros-corresponsales/
+├── backend/           # API FastAPI, modelos, scripts, Alembic
+├── frontend/          # SPA React + Vite
+├── docker-compose.yml
+└── README.md
+```
